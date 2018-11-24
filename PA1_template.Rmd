@@ -1,25 +1,218 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
 
+# Reproducible Research- Week 2 assignment
 
-## Loading and preprocessing the data
+We first read the data file into R, we check it out with the str function
+and we convert the date column into date format and the steps column
+from integer to numeric:
 
-
-
-## What is mean total number of steps taken per day?
+```{r firstchunk}
 
 
 
-## What is the average daily activity pattern?
+
+
+activity <- read.csv("activity.csv")
+
+str(activity)
+
+activity$date <- as.Date(activity$date, format="%Y-%m-%d")
+
+activity$steps <- as.numeric(activity$steps)
+
+head(activity)
+
+```
+
+Then we use the tapply function to calculate the total number of steps per day:
+
+
+```{r secondchunk}
+steps_day <- tapply(activity$steps, activity$date, sum)
+
+```
+
+we plot our findings on a histogram, using the basic plotting system:
+
+```{r thirdchunk}
+
+hist(steps_day, main="Histogram of the distribution of the steps taken per day", 
+ylab=" Number of days", xlab= "total number of steps per day", col ="skyblue4", 
+ylim=c(0, 30), labels=TRUE, breaks=10 )
+
+
+```
+
+we then calculate with tapply the mean and the median of the steps per day and convert it from list to dataframe to better visualize it:
+
+
+```{r fourthchunk}
+steps_day_mean <- tapply(activity$steps, activity$date, mean)
+
+steps_day_mean <- as.data.frame(steps_day_mean)
+
+steps_day_mean
+
+steps_day_median <- tapply(activity$steps, activity$date, median)
+
+steps_day_median <- as.data.frame (steps_day_median)
+
+steps_day_median
+
+```
+
+
+We can see there are some missing values (NA) as we don't have the data for 
+all the intervals within several days, plus as a big portion of the day is spent either sleeping or sitting the median number of steps is zero for all the available days.
+
+We then calculate the number of steps for each 5 minutes interval, averaged over every day, we use the dplyr package to do that. We also have to remove NA values otherwise R doesn't calculate our mean. We finally plot our findings using the ggplot package: 
+
+
+```{r fifthchunk}
+
+ steps <- as.data.frame(activity %>%
+  group_by (interval) %>%
+
+ summarise (step_mean = mean(steps, na.rm=TRUE)))
 
 
 
-## Imputing missing values
+str(steps)
+
+head(steps)
+
+ggplot(aes(x = interval, y = step_mean), data= steps) + 
+geom_line(color="red") + ggtitle("Chart of average steps over 5 minutes interval")+
+labs( x="5 minutes intervals", y=" average steps")
+
+```
+
+
+We now want to fill in our missing values, we first check how many of them we have (they're all in the steps column):
+
+```{r sixthchunk}
+
+sum(is.na(activity$steps))
+    
+```
+
+We now create a copy of our dataframe and fill in the NA values with the interval means as previously calculated. AS we can see have no NA values left:
+
+```{r seventhchunk}
+
+activity2 <- activity 
 
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+activity2[is.na(activity2)] <- steps$step_mean 
+
+sum(is.na(activity2$steps))
+
+```
+
+We then calculate, again with tapply, the daily sums of steps but with our missing values filled in. We then plot the results for the 2 different dataframes, they're quite different. WE use qplot function to generate our histograms. Notice how qplot, unlike the basic plotting system warn us about the removed NA values in the first histogram:
+
+
+```{r eightchunk}
+steps_day2  <- tapply(activity2$steps, activity2$date, sum)
+
+
+plot1 <- qplot(steps_day, geom="histogram", xlab="sum of steps per day",
+ylab="tot. number of days")
+
+plot2 <- qplot(steps_day2, geom="histogram", xlab="sum of steps per day",
+ylab="tot. number of days")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+
+We now calculate the new daily means and medians. Filling in the NA values leads us to quite different results, particularly some of the medians are not zero anymore:
+
+```{r ninethchunk}
+
+
+steps_day_mean_filledin <- tapply(activity2$steps, activity2$date, mean)
+
+
+steps_day_mean_filledin <- as.data.frame(steps_day_mean_filledin)
+
+steps_day_mean_filledin
+
+steps_day_median_filledin <- tapply(activity2$steps, activity2$date, median)
+
+steps_day_median_filledin <- as.data.frame(steps_day_median_filledin)
+
+steps_day_median_filledin
+
+```
+
+With weekdays function we now create a vector (days) with the days of the week corresponding to the dates on the steps column of the filled in version of our dataframe. We then use the ifelse function (that's what you have to use with vector objects) to create a new vector with only 2 categories: weekday and weekend:
+
+
+```{r tenthchunk}
+days <- weekdays(activity2$date)
+
+
+type_of_day <- ifelse (days=="sabato" | days=="domenica", "weekend", "weekday")
+
+```
+
+
+We then add the type_of_day vector to the filled in version of our dataframe and we convert in from character to factors:
+
+
+```{r eleventhchunk}
+
+activity2$type_of_day <- type_of_day
+
+activity2$type_of_day <- as.factor(activity2$type_of_day)
+
+str(activity2)
+
+```
+
+
+We then, again using dplyr, calculate the means of the steps for 5 minutes intervals over all the days, this time though we calculate for each interval 2 different averages, 1 for weekdays and 1 for weekends. We also convert our results from exponential notation to regular decimal notation:
+
+
+```{r twelvethchunk}
+
+steps2 <- as.data.frame(activity2 %>%
+  group_by (interval, type_of_day) %>%
+
+ summarise (step_mean = mean(steps)))
+
+options(scipen=999)
+
+str(steps2)
+
+```
+
+We have now a dataframe with 2 averages for each 5 minutes interval, we want to compare and plot the values for weekdays and weekends. We then subset the dataframe in 2 parts, according to the 2 levels of our factor column(type_of_day). We then use the basic plotting system to create 2 line type of charts over 2 rows:
+
+
+
+```{r }
+steps2_weekday <- steps2[steps2$type_of_day=="weekday",]
+
+str(steps2_weekday)
+
+steps2_weekend <- steps2[steps2$type_of_day=="weekend",]
+
+str(steps2_weekend)
+
+par(mfrow =c(2,1))
+
+plot(steps2_weekday$interval, steps2_weekday$step_mean,type="l",
+ main=" number of steps per 5 min interval- weekday", xlab="interval",
+ylab="average number of steps", col="blue")
+
+plot(steps2_weekend$interval, steps2_weekend$step_mean,type="l",
+ main=" number of steps per 5 min interval- weekend", xlab="interval",
+ylab="average number of steps", col="blue")
+
+```
+
+
+
