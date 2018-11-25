@@ -10,7 +10,7 @@ We first read the data file into R, we check it out with the str function
 and we convert the date column into date format and the steps column
 from integer to numeric:
 
-```{r firstchunk}
+```{r first_chunk}
 
 
 
@@ -31,14 +31,14 @@ head(activity)
 Then we use the tapply function to calculate the total number of steps per day:
 
 
-```{r secondchunk}
+```{r second_chunk}
 steps_day <- tapply(activity$steps, activity$date, sum)
 
 ```
 
 we plot our findings on a histogram, using the basic plotting system:
 
-```{r thirdchunk}
+```{r third_chunk}
 
 hist(steps_day, main="Histogram of the distribution of the steps taken per day", 
 ylab=" Number of days", xlab= "total number of steps per day", col ="skyblue4", 
@@ -50,7 +50,7 @@ ylim=c(0, 30), labels=TRUE, breaks=10 )
 we then calculate with tapply the mean and the median of the steps per day and convert it from list to dataframe to better visualize it:
 
 
-```{r fourthchunk}
+```{r fourth_chunk}
 steps_day_mean <- tapply(activity$steps, activity$date, mean)
 
 steps_day_mean <- as.data.frame(steps_day_mean)
@@ -72,7 +72,7 @@ all the intervals within several days, plus as a big portion of the day is spent
 We then calculate the number of steps for each 5 minutes interval, averaged over every day, we use the dplyr package to do that. We also have to remove NA values otherwise R doesn't calculate our mean. We finally plot our findings using the ggplot package: 
 
 
-```{r fifthchunk}
+```{r fifth_chunk}
 
  steps <- as.data.frame(activity %>%
   group_by (interval) %>%
@@ -94,7 +94,7 @@ labs( x="5 minutes intervals", y=" average steps")
 
 We now want to fill in our missing values, we first check how many of them we have (they're all in the steps column):
 
-```{r sixthchunk}
+```{r sixth_chunk}
 
 sum(is.na(activity$steps))
     
@@ -102,7 +102,7 @@ sum(is.na(activity$steps))
 
 We now create a copy of our dataframe and fill in the NA values with the interval means as previously calculated. AS we can see have no NA values left:
 
-```{r seventhchunk}
+```{r seventh_chunk}
 
 activity2 <- activity 
 
@@ -117,7 +117,7 @@ sum(is.na(activity2$steps))
 We then calculate, again with tapply, the daily sums of steps but with our missing values filled in. We then plot the results for the 2 different dataframes, they're quite different. WE use qplot function to generate our histograms. Notice how qplot, unlike the basic plotting system warn us about the removed NA values in the first histogram:
 
 
-```{r eightchunk}
+```{r eight_chunk}
 steps_day2  <- tapply(activity2$steps, activity2$date, sum)
 
 
@@ -134,7 +134,7 @@ grid.arrange(plot1, plot2, ncol=2)
 
 We now calculate the new daily means and medians. Filling in the NA values leads us to quite different results, particularly some of the medians are not zero anymore:
 
-```{r ninethchunk}
+```{r nineth_chunk}
 
 
 steps_day_mean_filledin <- tapply(activity2$steps, activity2$date, mean)
@@ -155,7 +155,7 @@ steps_day_median_filledin
 With weekdays function we now create a vector (days) with the days of the week corresponding to the dates on the steps column of the filled in version of our dataframe. We then use the ifelse function (that's what you have to use with vector objects) to create a new vector with only 2 categories: weekday and weekend:
 
 
-```{r tenthchunk}
+```{r tenth_chunk}
 days <- weekdays(activity2$date)
 
 
@@ -167,7 +167,7 @@ type_of_day <- ifelse (days=="sabato" | days=="domenica", "weekend", "weekday")
 We then add the type_of_day vector to the filled in version of our dataframe and we convert in from character to factors:
 
 
-```{r eleventhchunk}
+```{r eleventh_chunk}
 
 activity2$type_of_day <- type_of_day
 
@@ -181,7 +181,7 @@ str(activity2)
 We then, again using dplyr, calculate the means of the steps for 5 minutes intervals over all the days, this time though we calculate for each interval 2 different averages, 1 for weekdays and 1 for weekends. We also convert our results from exponential notation to regular decimal notation:
 
 
-```{r twelvethchunk}
+```{r twelveth_chunk}
 
 steps2 <- as.data.frame(activity2 %>%
   group_by (interval, type_of_day) %>%
@@ -198,7 +198,7 @@ We have now a dataframe with 2 averages for each 5 minutes interval, we want to 
 
 
 
-```{r }
+```{r thirteenth_chunk}
 steps2_weekday <- steps2[steps2$type_of_day=="weekday",]
 
 str(steps2_weekday)

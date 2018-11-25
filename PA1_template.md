@@ -59,7 +59,7 @@ ylab=" Number of days", xlab= "total number of steps per day", col ="skyblue4",
 ylim=c(0, 30), labels=TRUE, breaks=10 )
 ```
 
-![](PA1_template_files/figure-html/thirdchunk-1.png)<!-- -->
+![](PA1_template_files/figure-html/third_chunk-1.png)<!-- -->
 
 we then calculate with tapply the mean and the median of the steps per day and convert it from list to dataframe to better visualize it:
 
@@ -256,7 +256,7 @@ geom_line(color="red") + ggtitle("Chart of average steps over 5 minutes interval
 labs( x="5 minutes intervals", y=" average steps")
 ```
 
-![](PA1_template_files/figure-html/fifthchunk-1.png)<!-- -->
+![](PA1_template_files/figure-html/fifth_chunk-1.png)<!-- -->
 
 
 We now want to fill in our missing values, we first check how many of them we have (they're all in the steps column):
@@ -316,7 +316,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/eightchunk-1.png)<!-- -->
+![](PA1_template_files/figure-html/eight_chunk-1.png)<!-- -->
 
 
 We now calculate the new daily means and medians. Filling in the NA values leads us to quite different results, particularly some of the medians are not zero anymore:
@@ -567,7 +567,7 @@ plot(steps2_weekend$interval, steps2_weekend$step_mean,type="l",
 ylab="average number of steps", col="blue")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](PA1_template_files/figure-html/thirteenth_chunk-1.png)<!-- -->
 
 
 
