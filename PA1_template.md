@@ -59,7 +59,7 @@ ylab=" Number of days", xlab= "total number of steps per day", col ="skyblue4",
 ylim=c(0, 30), labels=TRUE, breaks=10 )
 ```
 
-![](PA1_template_files/figure-html/third_chunk-1.png)<!-- -->
+![](Pa1_template_files/figure-html/third_chunk-1.png)<!-- -->
 
 we then calculate with tapply the mean and the median of the steps per day and convert it from list to dataframe to better visualize it:
 
@@ -215,7 +215,7 @@ steps_day_median
 We can see there are some missing values (NA) as we don't have the data for 
 all the intervals within several days, plus as a big portion of the day is spent either sleeping or sitting the median number of steps is zero for all the available days.
 
-We then calculate the number of steps for each 5 minutes interval, averaged over every day, we use the dplyr package to do that. We also have to remove NA values otherwise R doesn't calculate our mean. We finally plot our findings using the ggplot package: 
+We then calculate the number of steps for each 5 minutes interval, averaged over every day, we use the dplyr package to do that. We also have to remove NA values otherwise R doesn't calculate our mean. We also calculate the interval with the highest mean. We finally plot our findings using the ggplot package: 
 
 
 
@@ -256,7 +256,18 @@ geom_line(color="red") + ggtitle("Chart of average steps over 5 minutes interval
 labs( x="5 minutes intervals", y=" average steps")
 ```
 
-![](PA1_template_files/figure-html/fifth_chunk-1.png)<!-- -->
+![](Pa1_template_files/figure-html/fifth_chunk-1.png)<!-- -->
+
+Apparently the interval with the highest average number of steps is the one starting at 5:05PM
+
+
+```r
+steps$interval[max(steps$step_mean)]
+```
+
+```
+## [1] 1705
+```
 
 
 We now want to fill in our missing values, we first check how many of them we have (they're all in the steps column):
@@ -316,7 +327,7 @@ grid.arrange(plot1, plot2, ncol=2)
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![](PA1_template_files/figure-html/eight_chunk-1.png)<!-- -->
+![](Pa1_template_files/figure-html/eight_chunk-1.png)<!-- -->
 
 
 We now calculate the new daily means and medians. Filling in the NA values leads us to quite different results, particularly some of the medians are not zero anymore:
@@ -567,7 +578,7 @@ plot(steps2_weekend$interval, steps2_weekend$step_mean,type="l",
 ylab="average number of steps", col="blue")
 ```
 
-![](PA1_template_files/figure-html/thirteenth_chunk-1.png)<!-- -->
+![](Pa1_template_files/figure-html/thirteenth_chunk-1.png)<!-- -->
 
 
 
